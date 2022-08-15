@@ -4,7 +4,7 @@ USE db_facturacion;
 
 CREATE TABLE tb_cliente(
   codigo int,
-  nit,
+  nit int,
   nombre varchar (80),
   telefono,
   direccion text,
@@ -32,3 +32,14 @@ CREATE TABLE tb_producto(
   PRIMARY KEY (codigo),
   FOREIGN KEY (proveedor) REFERENCES proveedor (codigo)
 );
+
+CREATE TABLE tb_factura(
+  numero int,
+  fecha datetime,
+  codigo_cliente int UNIQUE,
+  total_factura decimal,
+  
+  PRIMARY KEY (numero),
+  FOREIGN KEY (codigo_cliente) REFERENCES tb_cliente (codigo)
+);
+
