@@ -20,3 +20,15 @@ CREATE TABLE tb_proveedor(
   
   PRIMARY KEY (codigo)
 );
+
+CREATE TABLE tb_producto(
+  codigo int,
+  descripcion varchar (100),
+  proveedor int UNIQUE,
+  precio_costo decimal,
+  precio_venta decimal,
+  foto text,
+
+  PRIMARY KEY (codigo),
+  FOREIGN KEY (proveedor) REFERENCES proveedor (codigo)
+);
