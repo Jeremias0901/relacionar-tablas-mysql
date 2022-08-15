@@ -15,7 +15,7 @@ CREATE TABLE tb_cliente(
 CREATE TABLE tb_proveedor(
   codigo int (2),
   proveedor varchar (60),
-  telefono,
+  telefono int (2),
   direccion text,
   
   PRIMARY KEY (codigo)
