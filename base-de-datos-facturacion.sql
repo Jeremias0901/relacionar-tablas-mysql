@@ -54,23 +54,30 @@ CREATE TABLE `tb_detailinvoice`(
 /* ============ RELACION DE LAS TABLAS ============ */
 
 ALTER TABLE `tb_invoice`
+  DROP FOREIGN KEY `rl_invoice_customer`;
+ALTER TABLE `tb_invoice`
   ADD CONSTRAINT `rl_invoice_customer`
-  FOREIGN KEY (`number_invoice`) REFERENCES `tb_customer` (`customer_key`)
+  FOREIGN KEY (`customer_key`) REFERENCES `tb_customer` (`customer_key`)
     ON DELETE CASCADE
     ON UPDATE CASCADE;
 
 ALTER TABLE `tb_product`
+  DROP FOREIGN KEY `rl_product_supplier`;
+ALTER TABLE `tb_product`
   ADD CONSTRAINT `rl_product_supplier`
-  FOREIGN KEY (`product_key`) REFERENCES `tb_supplier` (`supplier_key`)
+  FOREIGN KEY (`supplier_key`) REFERENCES `tb_supplier` (`supplier_key`)
     ON DELETE CASCADE
     ON UPDATE CASCADE;
 
 ALTER TABLE `tb_detailinvoice`
+  DROP FOREIGN KEY `rl_detailinvoice_invoice`,
+  DROP FOREIGN KEY `rl_detailinvoice_product`;
+ALTER TABLE `tb_detailinvoice`
   ADD CONSTRAINT `rl_detailinvoice_invoice`
-  FOREIGN KEY (`detailinvoice_key`) REFERENCES `tb_invoice` (`number_invoice`)
+  FOREIGN KEY (`number_invoice`) REFERENCES `tb_invoice` (`number_invoice`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   ADD CONSTRAINT `rl_detailinvoice_product`
-  FOREIGN KEY (`detailinvoice_key`) REFERENCES `tb_product` (`product_key`)
+  FOREIGN KEY (`product_key`) REFERENCES `tb_product` (`product_key`)
     ON DELETE CASCADE
     ON UPDATE CASCADE;
