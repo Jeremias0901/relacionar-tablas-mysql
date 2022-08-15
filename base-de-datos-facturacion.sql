@@ -1,76 +1,76 @@
-CREATE DATABASE db_facturacion;
+CREATE DATABASE IF NOT EXISTS `db_facturation`;
 
-USE db_facturacion;
+USE `db_facturation`;
 
-CREATE TABLE tb_cliente(
-  codigo int (2),
-  nit int (2),
-  nombre varchar (80),
-  telefono int (2),
-  direccion text,
+CREATE TABLE `tb_customer`(
+  `customer_key` INT (2),
+  `cuil` INT (2),
+  `name` VARCHAR (80),
+  `telephono` INT (2),
+  `direction` TEXT,
   
-  PRIMARY KEY (codigo)
+  PRIMARY KEY (`customer_key`)
 );
 
-CREATE TABLE tb_proveedor(
-  codigo int (2),
-  proveedor varchar (60),
-  telefono int (2),
-  direccion text,
+CREATE TABLE `tb_supplier`(
+  `supplier_key` INT (2),
+  `name` VARCHAR (60),
+  `telephono` INT (2),
+  `direction` TEXT,
   
-  PRIMARY KEY (codigo)
+  PRIMARY KEY (`supplier_key`)
 );
 
-CREATE TABLE tb_producto(
-  codigo int (2),
-  descripcion varchar (100),
-  proveedor int (2) UNIQUE,
-  precio_costo decimal,
-  precio_venta decimal,
-  foto text,
+CREATE TABLE `tb_product`(
+  `product_key` INT (2),
+  `description` VARCHAR (100),
+  `supplier_key` INT (2) UNIQUE,
+  `price_cost` DECIMAL,
+  `price_sale` DECIMAL,
+  `photo` TEXT,
 
-  PRIMARY KEY (codigo)
+  PRIMARY KEY (`product_key`)
 );
 
-CREATE TABLE tb_factura(
-  numero int (2),
-  fecha datetime,
-  codigo_cliente int (2) UNIQUE,
-  total_factura decimal,
+CREATE TABLE `tb_invoice`(
+  `number_invoice` INT (2),
+  `date` datetime,
+  `customer_key` INT (2) UNIQUE,
+  `invoice_total` DECIMAL,
   
-  PRIMARY KEY (numero)
+  PRIMARY KEY (`number_invoice`)
 );
 
-CREATE TABLE tb_detalle_factura(
-  id int (2) AUTO_INCREMENT,
-  numero_factura int (2) UNIQUE,
-  codigo_producto int (2) UNIQUE,
-  cantidad_pedida decimal,
-  precio_total decimal,
+CREATE TABLE `tb_detailinvoice`(
+  `detailinvoice_key` INT (2) AUTO_INCREMENT,
+  `number_invoice` INT (2) UNIQUE,
+  `product_key` INT (2) UNIQUE,
+  `quantity_ordered` DECIMAL,
+  `price_total` DECIMAL,
   
-  PRIMARY KEY (id)
+  PRIMARY KEY (`detailinvoice_key`)
 );
 
 /* ============ RELACION DE LAS TABLAS ============ */
 
-ALTER TABLE tb_factura
-  ADD CONSTRAINT rl_factura_cliente
-  FOREIGN KEY (codigo_cliente) REFERENCES tb_cliente (codigo)
+ALTER TABLE `tb_invoice`
+  ADD CONSTRAINT `rl_invoice_customer`
+  FOREIGN KEY (`number_invoice`) REFERENCES `tb_customer` (`customer_key`)
     ON DELETE CASCADE
     ON UPDATE CASCADE;
 
-ALTER TABLE tb_producto
-  ADD CONSTRAINT rl_producto_proveedor
-  FOREIGN KEY (proveedor) REFERENCES tb_proveedor (codigo)
+ALTER TABLE `tb_product`
+  ADD CONSTRAINT `rl_product_supplier`
+  FOREIGN KEY (`product_key`) REFERENCES `tb_supplier` (`supplier_key`)
     ON DELETE CASCADE
     ON UPDATE CASCADE;
 
-ALTER TABLE tb_detalle_factura
-  ADD CONSTRAINT rl_detalle_factura_factura
-  FOREIGN KEY (numero_factura) REFERENCES tb_factura (numero)
+ALTER TABLE `tb_detailinvoice`
+  ADD CONSTRAINT `rl_detailinvoice_invoice`
+  FOREIGN KEY (`detailinvoice_key`) REFERENCES `tb_invoice` (`number_invoice`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  ADD CONSTRAINT rl_detalle_factura_producto
-  FOREIGN KEY (codigo_producto) REFERENCES tb_producto (codigo)
-  ON DELETE CASCADE
-  ON UPDATE CASCADE;
+  ADD CONSTRAINT `rl_detailinvoice_product`
+  FOREIGN KEY (`detailinvoice_key`) REFERENCES `tb_product` (`product_key`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
