@@ -43,3 +43,14 @@ CREATE TABLE tb_factura(
   FOREIGN KEY (codigo_cliente) REFERENCES tb_cliente (codigo)
 );
 
+CREATE TABLE tb_detalle_factura(
+  id int AUTO_INCREMENT,
+  numero_factura int UNIQUE,
+  codigo_producto int UNIQUE,
+  cantidad_pedida decimal,
+  precio_total decimal,
+  
+  PRIMARY KEY (id),
+  FOREIGN KEY (numero_factura)  REFERENCES tb_factura  (codigo),
+  FOREIGN KEY (codigo_producto) REFERENCES tb_producto (codigo)
+);
