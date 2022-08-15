@@ -11,3 +11,12 @@ CREATE TABLE tb_cliente(
   
   PRIMARY KEY (codigo)
 );
+
+CREATE TABLE tb_proveedor(
+  codigo int,
+  proveedor varchar (60),
+  telefono,
+  direccion text,
+  
+  PRIMARY KEY (codigo)
+);
