@@ -29,8 +29,7 @@ CREATE TABLE tb_producto(
   precio_venta decimal,
   foto text,
 
-  PRIMARY KEY (codigo),
-  FOREIGN KEY (proveedor) REFERENCES tb_proveedor (codigo)
+  PRIMARY KEY (codigo)
 );
 
 CREATE TABLE tb_factura(
@@ -39,8 +38,7 @@ CREATE TABLE tb_factura(
   codigo_cliente int (2) UNIQUE,
   total_factura decimal,
   
-  PRIMARY KEY (numero),
-  FOREIGN KEY (codigo_cliente) REFERENCES tb_cliente (codigo)
+  PRIMARY KEY (numero)
 );
 
 CREATE TABLE tb_detalle_factura(
@@ -50,7 +48,29 @@ CREATE TABLE tb_detalle_factura(
   cantidad_pedida decimal,
   precio_total decimal,
   
-  PRIMARY KEY (id),
-  FOREIGN KEY (numero_factura)  REFERENCES tb_factura  (numero),
-  FOREIGN KEY (codigo_producto) REFERENCES tb_producto (codigo)
+  PRIMARY KEY (id)
 );
+
+/* ============ RELACION DE LAS TABLAS ============ */
+
+ALTER TABLE tb_factura
+  ADD CONSTRAINT rl_factura_cliente
+  FOREIGN KEY (codigo_cliente) REFERENCES tb_cliente (codigo)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+ALTER TABLE tb_producto
+  ADD CONSTRAINT rl_producto_proveedor
+  FOREIGN KEY (proveedor) REFERENCES tb_proveedor (codigo)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+ALTER TABLE tb_detalle_factura
+  ADD CONSTRAINT rl_detalle_factura_factura
+  FOREIGN KEY (numero_factura) REFERENCES tb_factura (numero)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  ADD CONSTRAINT rl_detalle_factura_producto
+  FOREIGN KEY (codigo_producto) REFERENCES tb_producto (codigo)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
