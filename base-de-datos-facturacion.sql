@@ -81,3 +81,36 @@ ALTER TABLE `tb_detailinvoice`
   FOREIGN KEY (`product_key`) REFERENCES `tb_product` (`product_key`)
     ON DELETE CASCADE
     ON UPDATE CASCADE;
+
+/* ============ PRUEBAS ============ */
+
+/* 
+  tabla fuerte: tabla que no depende de otras tablas. no posee claves foraneas.
+  tabla debil : tabla que si depende de otras tablas. si posee claves foraneas.
+*/
+
+/* 
+  sí pruebo insertar datos en una tabla debil, el sistema no me dejara,
+  porque indicamos que los UPDATE seran en cascada, es decir:
+  el orden de la insercion de los datos es:
+    1ero las tablas fuertes.
+    2do las tablas debiles dependientes de las tablas fuertes previamente cargadas.
+*/
+
+/* hagamos al prueba de insertar datos en tb_product */
+ 
+INSERT INTO `tb_product`
+  (`product_key`, `description` , `supplier_key`, `price_cost`, `price_sale`, `photo`) VALUES
+  (1            , "black, small", 1             ,  100.50     , 90.50       ,  ""    );
+
+/*
+  Error retunred:
+  ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint
+  fails (`db_facturation`.`tb_product`, CONSTRAINT `rl_product_supplier`
+  FOREIGN KEY (`supplier_key`) REFERENCES `tb_supplier` (`supplier_key`)
+  ON DELETE CASCADE ON UPDATE CASCADE)
+*/
+
+INSERT INTO `tb_customer`
+  (`customer_key`, `cuil`     , `name` , `telephono`, `direction`) VALUES
+  (1             , 27698652314, "Pedro", 1124689548 , "Av. False");
