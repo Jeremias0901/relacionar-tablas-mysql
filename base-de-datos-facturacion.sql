@@ -30,7 +30,7 @@ CREATE TABLE tb_producto(
   foto text,
 
   PRIMARY KEY (codigo),
-  FOREIGN KEY (proveedor) REFERENCES proveedor (codigo)
+  FOREIGN KEY (proveedor) REFERENCES tb_proveedor (codigo)
 );
 
 CREATE TABLE tb_factura(
@@ -51,6 +51,6 @@ CREATE TABLE tb_detalle_factura(
   precio_total decimal,
   
   PRIMARY KEY (id),
-  FOREIGN KEY (numero_factura)  REFERENCES tb_factura  (codigo),
+  FOREIGN KEY (numero_factura)  REFERENCES tb_factura  (numero),
   FOREIGN KEY (codigo_producto) REFERENCES tb_producto (codigo)
 );
