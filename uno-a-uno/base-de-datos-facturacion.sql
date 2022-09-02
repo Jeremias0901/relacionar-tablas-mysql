@@ -54,24 +54,17 @@ CREATE TABLE `tb_detailinvoice`(
 /* ============ RELACION DE LAS TABLAS ============ */
 
 ALTER TABLE `tb_invoice`
-  DROP FOREIGN KEY `rl_invoice_customer`;
-ALTER TABLE `tb_invoice`
   ADD CONSTRAINT `rl_invoice_customer`
   FOREIGN KEY (`customer_key`) REFERENCES `tb_customer` (`customer_key`)
     ON DELETE CASCADE
     ON UPDATE CASCADE;
 
 ALTER TABLE `tb_product`
-  DROP FOREIGN KEY `rl_product_supplier`;
-ALTER TABLE `tb_product`
   ADD CONSTRAINT `rl_product_supplier`
   FOREIGN KEY (`supplier_key`) REFERENCES `tb_supplier` (`supplier_key`)
     ON DELETE CASCADE
     ON UPDATE CASCADE;
 
-ALTER TABLE `tb_detailinvoice`
-  DROP FOREIGN KEY `rl_detailinvoice_invoice`,
-  DROP FOREIGN KEY `rl_detailinvoice_product`;
 ALTER TABLE `tb_detailinvoice`
   ADD CONSTRAINT `rl_detailinvoice_invoice`
   FOREIGN KEY (`number_invoice`) REFERENCES `tb_invoice` (`number_invoice`)
@@ -97,7 +90,7 @@ ALTER TABLE `tb_detailinvoice`
     2do las tablas debiles dependientes de las tablas fuertes previamente cargadas.
 */
 
-/* hagamos al prueba de insertar datos en tb_product */
+/* hagamos la prueba de insertar datos en tb_product */
  
 INSERT INTO `tb_product`
   (`product_key`, `description` , `supplier_key`, `price_cost`, `price_sale`, `photo`) VALUES
@@ -118,6 +111,8 @@ INSERT INTO `tb_product`
 INSERT INTO `tb_supplier`
   (`supplier_key`, `name`      , `telephono`, `direction`                 ) VALUES
   (1             , "serenisima", 1132266763 , "Ministro French 165, Hamps");
+
+/* ahora insertamos datos en la tabla productos */
 
 INSERT INTO `tb_product`
   (`product_key`, `description`  , `supplier_key`, `price_cost`, `price_sale`, `photo`) VALUES
@@ -154,7 +149,9 @@ INSERT INTO `tb_product`
 
   El sistema no me permite relacionar mas de 1 registro de tb_product a un mismo registro de tb_supplier
   Es decir, la relacion es de 1 a 1.
-  ---> 1 producto tiene un proveedor. Cada proveedor tiene 1 producto.
+  ---> 1 producto tiene un proveedor. Cada proveedor tiene 1 producto. Este ejemplo no es el
+  apropiado para explicar una relacion uno a uno tal vez uno de un pasajer tiene un pasaporte.
+  ya que: un pasajero siempre tiene un pasaporte y un pasaporte nunca  puede tener a varios pasajeros
 */
 
 /* ============ INVENTANDO PROBLEMATICA PARA RELACIONAR TABLAS ============ */
@@ -220,20 +217,9 @@ INSERT INTO `tb_supplier`
 
 INSERT INTO `tb_product`
   (`product_key`, `description`, `supplier_key`, `price_cost`, `price_sale`, `photo`) VALUES
-  (2            , "harina 000"   , 2             ,  60.85      , 90.50       ,  ""    ),
-  (3            , "margarina"    , 3             ,  30.20      , 40.50       ,  ""    );
+  (2            , "harina 000"   , 3             ,  60.85      , 90.50       ,  ""    ),
+  (3            , "margarina"    , 4             ,  30.20      , 40.50       ,  ""    );
 
-/* 
-  En una relacion (1:1) en cascada, con tablas fuertes y debiles, no existe la posibilidad
-  de que un registro de tb_product no tenga un proveedor no registrado, pues la carga es en
-  cascada, primero se debe cargar la tabla tb_supplier para luego un registro de tb_product
-  pueda relacionarse con ese registro tb_supplier. Puede ser que tb_supplier no tenga asociado
-  registros en tb_product, pero no al reves. Porque tb_product depende de la carga de datos de
-  tb_supplier.
-  No hay producto que no venga de un proveedor.
-  Pero si hay proveedores sin productos relacionados.
- */
-SELECT * FROM tb_product INNER JOIN tb_supplier ON tb_product.supplier_key = tb_supplier.supplier_key;
 
 INSERT INTO `tb_customer`
   (`customer_key`, `cuil`     , `name`     , `telephono`, `direction`            ) VALUES
@@ -253,4 +239,54 @@ INSERT INTO `tb_detailinvoice`
 (3               , 3            , 67                ,  23650);
 
 
-/* ============= (INNER | LEFT | RIGHT) JOIN ============= [Proximamente] */
+/* ============= (INNER | LEFT | RIGHT) JOIN ============= */
+
+/* 
+  En una relacion (1:1) en cascada, con tablas fuertes y debiles, no existe la posibilidad
+  de que un registro de tb_product no tenga un proveedor no registrado, pues la carga es en
+  cascada, primero se debe cargar la tabla tb_supplier para luego un registro de tb_product
+  pueda relacionarse con ese registro tb_supplier. Puede ser que tb_supplier no tenga asociado
+  registros en tb_product, pero no al reves. Porque tb_product depende de la carga de datos de
+  tb_supplier.
+  No hay producto que no venga de un proveedor.
+  Pero si hay proveedores sin productos relacionados.
+ */
+
+SELECT
+  *
+FROM `tb_product`
+  INNER JOIN `tb_supplier` ON `tb_product`.`supplier_key` = `tb_supplier`.`supplier_key`;
+
+/*
+  INNER -> devuelve todos los registros en donde hay registros relacionados entre si de las tablas.
+  La consulta de arriba lo que hace es devolver todos los registros en donde los proveedores tengan
+  1 (un) producto relacionado, NO los proveedores que no tiene productos relacionados, porque inner solo lo
+  que hace es devolver todos los proveedores relacionados a almenos un producto.
+  RIGHT -> devuelve todos los registro de la tabla de la derecha relacionados o no. Logicamente cuando hay una relacion siempre
+  lo hacemos desde (FROM) una tabla, esa seria la tabla izquierda (LEFT), la que relacionamos con la de la izquierda
+  es la derecha (RIGHT).
+*/
+
+SELECT
+  *
+FROM `tb_product`
+  RIGHT JOIN `tb_supplier` ON `tb_product`.`supplier_key` = `tb_supplier`.`supplier_key`;
+
+/* RETO: devolver el mismo resultado de la consulta de arriba pero usando LEFT */
+
+SELECT
+  *
+FROM `tb_supplier`
+  LEFT JOIN `tb_product` ON `tb_supplier`.`supplier_key` = `tb_product`.`supplier_key`;
+
+/* Quiero saber a que proveedor le compro el cliente cuyo codigo = 3 */
+
+SELECT
+  `tb_customer`.`name` AS 'cliente',
+  `tb_supplier`.`name` AS 'proveedor'
+FROM `tb_customer`
+  INNER JOIN `tb_invoice`      ON `tb_customer`.`customer_key` = `tb_invoice`.`customer_key`
+  INNER JOIN `tb_detailinvoice` ON `tb_invoice`.`number_invoice` = `tb_detailinvoice`.`number_invoice`
+  INNER JOIN `tb_product`      ON `tb_detailinvoice`.`product_key` = `tb_product`.`product_key`
+  INNER JOIN `tb_supplier`     ON `tb_product`.`supplier_key` = `tb_supplier`.`supplier_key`
+WHERE `tb_customer`.`customer_key` = 3;
